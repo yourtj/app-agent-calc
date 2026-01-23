@@ -2,19 +2,24 @@ name: SimpleCalculator
 options:
   bundleIdPrefix: com.example
   createIntermediateGroups: true
-  deploymentTarget:
-    iOS: "15.0"
-settings:
-  DEVELOPMENT_TEAM: ""
+  defaultConfig: Debug
 targets:
   SimpleCalculator:
     type: application
     platform: iOS
+    deploymentTarget: "15.0"
     sources: 
       - path: Sources
         excludes: ["Info.plist"]
     settings:
       INFOPLIST_FILE: Sources/Info.plist
       PRODUCT_BUNDLE_IDENTIFIER: com.example.SimpleCalculator
-    scheme:
-      testTargets: []
+      TARGETED_DEVICE_FAMILY: 1
+      SUPPORTED_INTERFACE_ORIENTATIONS: UIInterfaceOrientationPortrait
+schemes:
+  SimpleCalculator:
+    build:
+      targets:
+        SimpleCalculator: all
+    run:
+      config: Debug
