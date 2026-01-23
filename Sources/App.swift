@@ -1,11 +1,10 @@
 import SwiftUI
 
 @main
-struct SimpleCalculatorApp: App {
+struct App: SwiftUI.App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .preferredColorScheme(.light)
         }
     }
 }
