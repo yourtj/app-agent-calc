@@ -1,11 +1,11 @@
 import Foundation
 
 class CalculatorModel: ObservableObject {
-    @Published var display = "0"
-    @Published var isTyping = false
+    @Published var displayValue: String = "0"
     
     private var accumulator: Double = 0
     private var pendingBinaryOperation: PendingBinaryOperation?
+    private var isTypingNumber: Bool = false
     
     private struct PendingBinaryOperation {
         let function: (Double, Double) -> Double
@@ -17,125 +17,108 @@ class CalculatorModel: ObservableObject {
     }
     
     // MARK: - Number Input
+    
     func addDigit(_ digit: String) {
-        if isTyping {
-            if display.count < 9 { // Prevent overflow
-                display += digit
+        if displayValue.count >= 8 && isTypingNumber {
+            return // Enforce 8-digit maximum
+        }
+        
+        if isTypingNumber {
+            if displayValue.count < 8 {
+                displayValue += digit
             }
         } else {
-            display = digit
-            isTyping = true
+            displayValue = digit
+            isTypingNumber = true
         }
     }
     
     func addDecimalPoint() {
-        if !display.contains(".") {
-            if isTyping {
-                display += "."
-            } else {
-                display = "0."
-                isTyping = true
+        if displayValue.contains(".") {
+            return // Prevent multiple decimal points
+        }
+        
+        if !isTypingNumber {
+            displayValue = "0."
+            isTypingNumber = true
+        } else {
+            if displayValue.count < 8 {
+                displayValue += "."
             }
         }
     }
     
     // MARK: - Operations
+    
     func performOperation(_ symbol: String) {
         switch symbol {
         case "C":
             clear()
-        case "±":
-            toggleSign()
-        case "%":
-            percentage()
         case "=":
             performPendingBinaryOperation()
-        case "+", "−", "×", "÷":
-            performBinaryOperation(symbol)
+        case "+":
+            performBinaryOperation { $0 + $1 }
+        case "-":
+            performBinaryOperation { $0 - $1 }
+        case "×":
+            performBinaryOperation { $0 * $1 }
+        case "÷":
+            performBinaryOperation { $1 == 0 ? Double.nan : $0 / $1 }
         default:
             break
         }
     }
     
-    private func performBinaryOperation(_ symbol: String) {
-        if isTyping {
-            accumulator = Double(display) ?? 0
-            isTyping = false
+    private func performBinaryOperation(_ operation: @escaping (Double, Double) -> Double) {
+        if let value = Double(displayValue) {
+            accumulator = value
         }
         
         performPendingBinaryOperation()
         
-        switch symbol {
-        case "+":
-            pendingBinaryOperation = PendingBinaryOperation(function: +, firstOperand: accumulator)
-        case "−":
-            pendingBinaryOperation = PendingBinaryOperation(function: -, firstOperand: accumulator)
-        case "×":
-            pendingBinaryOperation = PendingBinaryOperation(function: *, firstOperand: accumulator)
-        case "÷":
-            pendingBinaryOperation = PendingBinaryOperation(function: /, firstOperand: accumulator)
-        default:
-            break
-        }
+        pendingBinaryOperation = PendingBinaryOperation(
+            function: operation,
+            firstOperand: accumulator
+        )
+        
+        isTypingNumber = false
     }
     
     private func performPendingBinaryOperation() {
-        if pendingBinaryOperation != nil && isTyping {
-            let currentValue = Double(display) ?? 0
-            accumulator = pendingBinaryOperation!.perform(with: currentValue)
-            display = formatNumber(accumulator)
+        if let pending = pendingBinaryOperation, let value = Double(displayValue) {
+            let result = pending.perform(with: value)
+            
+            if result.isNaN || result.isInfinite {
+                displayValue = "Error"
+                clear()
+                return
+            }
+            
+            accumulator = result
+            displayValue = formatResult(result)
             pendingBinaryOperation = nil
-            isTyping = false
         }
     }
     
-    // MARK: - Utility Operations
     private func clear() {
-        display = "0"
+        displayValue = "0"
         accumulator = 0
         pendingBinaryOperation = nil
-        isTyping = false
+        isTypingNumber = false
     }
     
-    private func toggleSign() {
-        if isTyping {
-            if display.hasPrefix("-") {
-                display.removeFirst()
-            } else if display != "0" {
-                display = "-" + display
-            }
-        } else {
-            accumulator = -accumulator
-            display = formatNumber(accumulator)
-        }
-    }
-    
-    private func percentage() {
-        let currentValue = Double(display) ?? 0
-        let result = currentValue / 100
-        accumulator = result
-        display = formatNumber(result)
-        isTyping = false
-    }
-    
-    // MARK: - Formatting
-    private func formatNumber(_ number: Double) -> String {
-        // Handle division by zero
-        if number.isInfinite || number.isNaN {
-            return "Error"
-        }
-        
-        // Check if it's a whole number
-        if number == floor(number) && abs(number) < 1e9 {
-            return String(Int(number))
-        }
-        
-        // Format with up to 6 decimal places, removing trailing zeros
+    private func formatResult(_ value: Double) -> String {
         let formatter = NumberFormatter()
-        formatter.maximumFractionDigits = 6
+        formatter.maximumFractionDigits = 8
         formatter.minimumFractionDigits = 0
-        formatter.numberStyle = .decimal
         
-        return formatter.string(from: NSNumber(value: number)) ?? "0"
+        let result = formatter.string(from: NSNumber(value: value)) ?? "0"
+        
+        // Ensure result doesn't exceed 8 characters
+        if result.count > 8 {
+            return String(result.prefix(8))
+        }
+        
+        return result
     }
 }
