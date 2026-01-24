@@ -23,6 +23,6 @@
 - [x] Task 5: Implement CalculatorModel Logic (Add arithmetic operations and number handling)
 - [x] Task 6: Implement CalculatorViewModel Logic (Add state management and user interaction)
 - [x] Task 7: Implement CalculatorButton Component (Add styling and button types)
-- [ ] Task 8: Implement ContentView Layout (Add display area and button grid)
+- [x] Task 8: Implement ContentView Layout (Add display area and button grid)
 - [ ] Task 9: Integrate Components (Connect ViewModel to Views and handle user input)
 - [ ] Task 10: Add Display Logic (Implement 8-digit limit and dynamic font sizing)
