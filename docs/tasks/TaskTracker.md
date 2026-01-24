@@ -1,26 +1,28 @@
 ## Execution Plan
 
-1. **Files to Create**: 
+1. Files to Create: 
    - `project.yml` (Xcode project configuration)
    - `App.swift` (Main app entry point)
    - `ContentView.swift` (Main UI container)
-   - `CalculatorModel.swift` (Business logic)
-   - `CalculatorViewModel.swift` (State management)
+   - `CalculatorModel.swift` (Business logic and arithmetic operations)
+   - `CalculatorViewModel.swift` (State management and user interaction logic)
    - `CalculatorButton.swift` (Reusable button component)
    - `Info.plist` (App configuration)
 
-2. **Template Strategy**: 
-   First create all files as compilable stubs with minimal implementations. Each file will have proper structure and imports but empty/default implementations. This ensures the project builds successfully before adding any business logic.
+2. Template Strategy: 
+   - First create project scaffolding with basic app structure
+   - Then create empty template/stub files for each component with minimal compilable code
+   - Finally implement features by adding logic to existing template files one by one
 
 ## Task List
 
-- [ ] Task 1: Create Project Scaffolding (project.yml, App.swift shell, ContentView.swift shell, Info.plist)
-- [ ] Task 2: Create CalculatorModel Template (Stubs only - empty struct with method signatures)
-- [ ] Task 3: Create CalculatorViewModel Template (Stubs only - ObservableObject with @Published properties)
-- [ ] Task 4: Create CalculatorButton Template (Stubs only - SwiftUI View with basic structure)
-- [ ] Task 5: Implement CalculatorModel Logic (arithmetic operations, validation, formatting)
-- [ ] Task 6: Implement CalculatorViewModel Logic (state management, user input handling)
-- [ ] Task 7: Implement CalculatorButton Styling and Types (visual appearance, button variants)
-- [ ] Task 8: Implement ContentView Layout (4x5 button grid, display area, proper spacing)
-- [ ] Task 9: Wire Up Button Actions (connect UI buttons to ViewModel methods)
-- [ ] Task 10: Implement Display Formatting (8-digit limit, dynamic font sizing, right alignment)
+- [ ] Task 1: Create Project Scaffolding (project.yml, App.swift, ContentView.swift stubs, Info.plist)
+- [ ] Task 2: Create CalculatorModel Template (Stub with empty methods)
+- [ ] Task 3: Create CalculatorViewModel Template (Stub with basic properties)
+- [ ] Task 4: Create CalculatorButton Template (Stub with basic button structure)
+- [ ] Task 5: Implement CalculatorModel Logic (Add arithmetic operations and number handling)
+- [ ] Task 6: Implement CalculatorViewModel Logic (Add state management and user interaction)
+- [ ] Task 7: Implement CalculatorButton Component (Add styling and button types)
+- [ ] Task 8: Implement ContentView Layout (Add display area and button grid)
+- [ ] Task 9: Integrate Components (Connect ViewModel to Views and handle user input)
+- [ ] Task 10: Add Display Logic (Implement 8-digit limit and dynamic font sizing)
