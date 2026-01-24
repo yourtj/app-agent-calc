@@ -1,0 +1,37 @@
+name: SimpleCalculator
+bundleIdPrefix: com.example
+deploymentTarget:
+  iOS: "15.0"
+targets:
+  SimpleCalculator:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: Sources
+        excludes: ["Info.plist"]
+    info:
+      path: Sources/Info.plist
+      properties:
+        CFBundleDisplayName: Simple Calculator
+        CFBundleIdentifier: com.example.SimpleCalculator
+        CFBundleVersion: "1"
+        CFBundleShortVersionString: "1.0"
+        UILaunchScreen:
+          UIImageName: ""
+          UIColorName: ""
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIRequiredDeviceCapabilities:
+          - armv7
+        LSRequiresIPhoneOS: true
+    dependencies: []
+schemes:
+  SimpleCalculator:
+    build:
+      targets:
+        SimpleCalculator: all
+    run:
+      config: Debug
+    archive:
+      config: Release
