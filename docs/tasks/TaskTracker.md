@@ -19,7 +19,7 @@
 - [x] Task 1: Create Project Scaffolding (project.yml, App.swift, ContentView.swift stubs, Info.plist)
 - [x] Task 2: Create CalculatorModel Template (Stub with empty methods)
 - [x] Task 3: Create CalculatorViewModel Template (Stub with basic properties)
-- [ ] Task 4: Create CalculatorButton Template (Stub with basic button structure)
+- [x] Task 4: Create CalculatorButton Template (Stub with basic button structure)
 - [ ] Task 5: Implement CalculatorModel Logic (Add arithmetic operations and number handling)
 - [ ] Task 6: Implement CalculatorViewModel Logic (Add state management and user interaction)
 - [ ] Task 7: Implement CalculatorButton Component (Add styling and button types)
