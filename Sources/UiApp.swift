@@ -1,78 +1,84 @@
 import SwiftUI
 
-@MainActor
-class CalculatorViewModel: ObservableObject {
-    // MARK: - Published Properties
-    @Published var display: String = "0"
-    @Published var currentOperation: String? = nil
-    @Published var previousValue: Double = 0
-    @Published var shouldClearDisplay = false
+struct CalculatorButton: View {
+    let title: String
+    let type: ButtonType
+    let action: () -> Void
     
-    // MARK: - Private Properties
-    private var currentValue: Double = 0
-    private var pendingOperation: Operation? = nil
+    enum ButtonType {
+        case number
+        case operation
+        case special
+        case clear
+    }
     
-    // MARK: - Operations Enum
-    enum Operation {
-        case add, subtract, multiply, divide
-        
-        func symbol() -> String {
-            switch self {
-            case .add: return "+"
-            case .subtract: return "-"
-            case .multiply: return "×"
-            case .divide: return "÷"
-            }
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.title2)
+                .fontWeight(.medium)
+                .foregroundColor(foregroundColor)
+                .frame(width: buttonWidth, height: buttonHeight)
+                .background(backgroundColor)
+                .cornerRadius(buttonCornerRadius)
         }
     }
     
-    // MARK: - Initialization
-    init() {
-        // Template initialization - to be implemented
+    // MARK: - Private Properties (Stubs)
+    
+    private var buttonWidth: CGFloat {
+        // TODO: Implement dynamic width calculation
+        80
     }
     
-    // MARK: - Number Input Methods (Stubs)
-    func numberPressed(_ number: Int) {
-        // TODO: Implement number input logic
+    private var buttonHeight: CGFloat {
+        // TODO: Implement dynamic height calculation
+        80
     }
     
-    func decimalPressed() {
-        // TODO: Implement decimal point logic
+    private var buttonCornerRadius: CGFloat {
+        // TODO: Implement corner radius calculation
+        10
     }
     
-    // MARK: - Operation Methods (Stubs)
-    func operationPressed(_ operation: Operation) {
-        // TODO: Implement operation selection logic
+    private var backgroundColor: Color {
+        // TODO: Implement color scheme based on button type
+        switch type {
+        case .number:
+            return .gray
+        case .operation:
+            return .orange
+        case .special:
+            return .blue
+        case .clear:
+            return .red
+        }
     }
     
-    func equalsPressed() {
-        // TODO: Implement calculation logic
+    private var foregroundColor: Color {
+        // TODO: Implement text color based on button type
+        .white
     }
-    
-    // MARK: - Utility Methods (Stubs)
-    func clearAll() {
-        // TODO: Implement clear all logic
-    }
-    
-    func clearEntry() {
-        // TODO: Implement clear entry logic
-    }
-    
-    func toggleSign() {
-        // TODO: Implement sign toggle logic
-    }
-    
-    func percentPressed() {
-        // TODO: Implement percentage logic
-    }
-    
-    // MARK: - Private Helper Methods (Stubs)
-    private func performCalculation() {
-        // TODO: Implement calculation logic
-    }
-    
-    private func formatDisplay(_ value: Double) -> String {
-        // TODO: Implement display formatting
-        return "0"
+}
+
+// MARK: - Preview
+
+struct CalculatorButton_Previews: PreviewProvider {
+    static var previews: some View {
+        VStack(spacing: 20) {
+            CalculatorButton(title: "1", type: .number) {
+                // TODO: Implement action
+            }
+            
+            CalculatorButton(title: "+", type: .operation) {
+                // TODO: Implement action
+            }
+            
+            CalculatorButton(title: "AC", type: .clear) {
+                // TODO: Implement action
+            }
+        }
+        .padding()
+        .previewLayout(.sizeThatFits)
     }
 }
