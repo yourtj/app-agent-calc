@@ -1,104 +1,142 @@
 import Foundation
+import Combine
 
 class CalculatorViewModel: ObservableObject {
     @Published var display: String = "0"
-    @Published var isResultDisplayed: Bool = false
+    @Published var previousValue: Double = 0
+    @Published var currentOperation: Operation?
+    @Published var shouldResetDisplay = false
     
-    private var firstOperand: Double?
-    private var currentOperation: Operation?
-    private var waitingForOperand: Bool = false
+    private let maxDigits = 8
     
     enum Operation: String, CaseIterable {
         case add = "+"
         case subtract = "−"
         case multiply = "×"
         case divide = "÷"
+        case equals = "="
         
-        func calculate(_ lhs: Double, _ rhs: Double) -> Double {
+        func calculate(_ a: Double, _ b: Double) -> Double {
             switch self {
             case .add:
-                return lhs + rhs
+                return a + b
             case .subtract:
-                return lhs - rhs
+                return a - b
             case .multiply:
-                return lhs * rhs
+                return a * b
             case .divide:
-                return rhs != 0 ? lhs / rhs : 0
+                return b != 0 ? a / b : 0
+            case .equals:
+                return b
             }
         }
     }
     
-    func inputDigit(_ digit: Int) {
-        if isResultDisplayed {
-            display = String(digit)
-            isResultDisplayed = false
-        } else if display == "0" || waitingForOperand {
-            display = String(digit)
-            waitingForOperand = false
+    func inputNumber(_ number: String) {
+        if shouldResetDisplay {
+            display = number
+            shouldResetDisplay = false
         } else {
-            display += String(digit)
+            if display == "0" {
+                display = number
+            } else {
+                // Check if adding this digit would exceed the limit
+                let newDisplay = display + number
+                if newDisplay.replacingOccurrences(of: ".", with: "").count <= maxDigits {
+                    display = newDisplay
+                }
+            }
         }
     }
     
     func inputDecimal() {
-        if isResultDisplayed {
+        if shouldResetDisplay {
             display = "0."
-            isResultDisplayed = false
-        } else if waitingForOperand {
-            display = "0."
-            waitingForOperand = false
+            shouldResetDisplay = false
         } else if !display.contains(".") {
-            display += "."
+            // Check if adding decimal point would exceed limit
+            let newDisplay = display + "."
+            if newDisplay.replacingOccurrences(of: ".", with: "").count <= maxDigits {
+                display = newDisplay
+            }
         }
     }
     
-    func performOperation(_ operation: Operation) {
-        let currentValue = Double(display) ?? 0
-        
-        if let firstOperand = firstOperand, let currentOperation = currentOperation, !waitingForOperand {
-            let result = currentOperation.calculate(firstOperand, currentValue)
-            display = formatResult(result)
-            self.firstOperand = result
-            isResultDisplayed = true
+    func inputOperation(_ operation: Operation) {
+        if let currentOp = currentOperation, !shouldResetDisplay {
+            performCalculation()
         } else {
-            firstOperand = currentValue
+            previousValue = Double(display) ?? 0
         }
         
         currentOperation = operation
-        waitingForOperand = true
+        shouldResetDisplay = true
     }
     
-    func calculate() {
-        guard let firstOperand = firstOperand,
-              let operation = currentOperation,
-              let secondOperand = Double(display) else {
-            return
-        }
+    func performCalculation() {
+        guard let operation = currentOperation else { return }
         
-        let result = operation.calculate(firstOperand, secondOperand)
+        let currentValue = Double(display) ?? 0
+        let result = operation.calculate(previousValue, currentValue)
+        
+        // Format result to fit within 8 digits
         display = formatResult(result)
         
-        // Reset state after calculation
-        self.firstOperand = nil
+        previousValue = result
         currentOperation = nil
-        waitingForOperand = false
-        isResultDisplayed = true
+        shouldResetDisplay = true
     }
     
     func clear() {
         display = "0"
-        firstOperand = nil
+        previousValue = 0
         currentOperation = nil
-        waitingForOperand = false
-        isResultDisplayed = false
+        shouldResetDisplay = false
     }
     
     private func formatResult(_ value: Double) -> String {
-        // Remove unnecessary decimal places
-        if value.truncatingRemainder(dividingBy: 1) == 0 {
-            return String(Int(value))
-        } else {
-            return String(value)
+        // Handle special cases
+        if value.isInfinite {
+            return "Error"
         }
+        if value.isNaN {
+            return "Error"
+        }
+        
+        let absValue = abs(value)
+        let isNegative = value < 0
+        let availableDigits = maxDigits - (isNegative ? 1 : 0)
+        
+        // For very large numbers, use scientific notation
+        if absValue >= pow(10, Double(availableDigits)) {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .scientific
+            formatter.maximumSignificantDigits = availableDigits - 3 // Account for "E+XX"
+            return formatter.string(from: NSNumber(value: value)) ?? "Error"
+        }
+        
+        // For regular numbers, remove unnecessary decimal places
+        if value == floor(value) && absValue < pow(10, Double(availableDigits)) {
+            return String(Int(value))
+        }
+        
+        // For decimal numbers, limit decimal places to fit
+        let integerPart = String(Int(absValue))
+        let availableDecimalPlaces = availableDigits - integerPart.count - 1 // -1 for decimal point
+        
+        if availableDecimalPlaces > 0 {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            formatter.maximumFractionDigits = availableDecimalPlaces
+            formatter.minimumFractionDigits = 0
+            return formatter.string(from: NSNumber(value: value)) ?? String(value)
+        }
+        
+        return String(Int(value))
+    }
+    
+    // Helper function to determine if display should use smaller font
+    func shouldUseSmallerFont() -> Bool {
+        return display.count > 6
     }
 }

@@ -5,106 +5,114 @@ struct ContentView: View {
     
     var body: some View {
         VStack(spacing: 1) {
-            // Display Area
+            // Display
             HStack {
                 Spacer()
-                Text(viewModel.displayText)
-                    .font(.system(size: 64, weight: .light, design: .default))
+                Text(viewModel.display)
+                    .font(displayFont)
                     .foregroundColor(.white)
-                    .minimumScaleFactor(0.5)
                     .lineLimit(1)
-                    .padding(.horizontal, 20)
+                    .minimumScaleFactor(0.5)
             }
-            .frame(maxWidth: .infinity, minHeight: 100)
+            .padding()
+            .frame(height: 100)
             .background(Color.black)
             
-            // Button Grid - 4x5 layout (20 buttons total)
+            // Button Grid
             VStack(spacing: 1) {
-                // Row 1: [C] [÷] [×] [-]
+                // Row 1: C, ±, %, ÷
                 HStack(spacing: 1) {
-                    CalculatorButton(title: "C", type: .function) {
+                    CalculatorButton(title: "C", color: .gray, textColor: .black) {
                         viewModel.clear()
                     }
-                    CalculatorButton(title: "÷", type: .operation) {
-                        viewModel.setOperation(.divide)
+                    CalculatorButton(title: "±", color: .gray, textColor: .black) {
+                        // Plus/minus functionality (placeholder)
                     }
-                    CalculatorButton(title: "×", type: .operation) {
-                        viewModel.setOperation(.multiply)
+                    CalculatorButton(title: "%", color: .gray, textColor: .black) {
+                        // Percentage functionality (placeholder)
                     }
-                    CalculatorButton(title: "-", type: .operation) {
-                        viewModel.setOperation(.subtract)
-                    }
-                }
-                
-                // Row 2: [7] [8] [9] [+]
-                HStack(spacing: 1) {
-                    CalculatorButton(title: "7", type: .number) {
-                        viewModel.inputNumber(7)
-                    }
-                    CalculatorButton(title: "8", type: .number) {
-                        viewModel.inputNumber(8)
-                    }
-                    CalculatorButton(title: "9", type: .number) {
-                        viewModel.inputNumber(9)
-                    }
-                    CalculatorButton(title: "+", type: .operation) {
-                        viewModel.setOperation(.add)
+                    CalculatorButton(title: "÷", color: .orange) {
+                        viewModel.inputOperation(.divide)
                     }
                 }
                 
-                // Row 3: [4] [5] [6] [+]
+                // Row 2: 7, 8, 9, ×
                 HStack(spacing: 1) {
-                    CalculatorButton(title: "4", type: .number) {
-                        viewModel.inputNumber(4)
+                    CalculatorButton(title: "7", color: .darkGray) {
+                        viewModel.inputNumber("7")
                     }
-                    CalculatorButton(title: "5", type: .number) {
-                        viewModel.inputNumber(5)
+                    CalculatorButton(title: "8", color: .darkGray) {
+                        viewModel.inputNumber("8")
                     }
-                    CalculatorButton(title: "6", type: .number) {
-                        viewModel.inputNumber(6)
+                    CalculatorButton(title: "9", color: .darkGray) {
+                        viewModel.inputNumber("9")
                     }
-                    CalculatorButton(title: "+", type: .operation) {
-                        viewModel.setOperation(.add)
+                    CalculatorButton(title: "×", color: .orange) {
+                        viewModel.inputOperation(.multiply)
                     }
                 }
                 
-                // Row 4: [1] [2] [3] [=]
+                // Row 3: 4, 5, 6, −
                 HStack(spacing: 1) {
-                    CalculatorButton(title: "1", type: .number) {
-                        viewModel.inputNumber(1)
+                    CalculatorButton(title: "4", color: .darkGray) {
+                        viewModel.inputNumber("4")
                     }
-                    CalculatorButton(title: "2", type: .number) {
-                        viewModel.inputNumber(2)
+                    CalculatorButton(title: "5", color: .darkGray) {
+                        viewModel.inputNumber("5")
                     }
-                    CalculatorButton(title: "3", type: .number) {
-                        viewModel.inputNumber(3)
+                    CalculatorButton(title: "6", color: .darkGray) {
+                        viewModel.inputNumber("6")
                     }
-                    CalculatorButton(title: "=", type: .function) {
-                        viewModel.calculate()
+                    CalculatorButton(title: "−", color: .orange) {
+                        viewModel.inputOperation(.subtract)
                     }
                 }
                 
-                // Row 5: [0] [0] [.] [=]
+                // Row 4: 1, 2, 3, +
                 HStack(spacing: 1) {
-                    CalculatorButton(title: "0", type: .number) {
-                        viewModel.inputNumber(0)
+                    CalculatorButton(title: "1", color: .darkGray) {
+                        viewModel.inputNumber("1")
                     }
-                    CalculatorButton(title: "0", type: .number) {
-                        viewModel.inputNumber(0)
+                    CalculatorButton(title: "2", color: .darkGray) {
+                        viewModel.inputNumber("2")
                     }
-                    CalculatorButton(title: ".", type: .function) {
+                    CalculatorButton(title: "3", color: .darkGray) {
+                        viewModel.inputNumber("3")
+                    }
+                    CalculatorButton(title: "+", color: .orange) {
+                        viewModel.inputOperation(.add)
+                    }
+                }
+                
+                // Row 5: 0, ., =
+                HStack(spacing: 1) {
+                    CalculatorButton(title: "0", color: .darkGray, isWide: true) {
+                        viewModel.inputNumber("0")
+                    }
+                    CalculatorButton(title: ".", color: .darkGray) {
                         viewModel.inputDecimal()
                     }
-                    CalculatorButton(title: "=", type: .function) {
-                        viewModel.calculate()
+                    CalculatorButton(title: "=", color: .orange) {
+                        viewModel.performCalculation()
                     }
                 }
             }
-            .background(Color.black)
         }
         .background(Color.black)
-        .ignoresSafeArea(.all, edges: .bottom)
     }
+    
+    private var displayFont: Font {
+        if viewModel.shouldUseSmallerFont() {
+            return .system(size: 32, weight: .thin, design: .default)
+        } else {
+            return .system(size: 48, weight: .thin, design: .default)
+        }
+    }
+}
+
+extension Color {
+    static let darkGray = Color(red: 0.2, green: 0.2, blue: 0.2)
+    static let gray = Color(red: 0.6, green: 0.6, blue: 0.6)
 }
 
 #Preview {
