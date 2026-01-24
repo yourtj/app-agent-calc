@@ -16,7 +16,7 @@
 
 ## Task List
 
-- [ ] Task 1: Create Project Scaffolding (project.yml, App.swift, ContentView.swift stubs, Info.plist)
+- [x] Task 1: Create Project Scaffolding (project.yml, App.swift, ContentView.swift stubs, Info.plist)
 - [ ] Task 2: Create CalculatorModel Template (Stub with empty methods)
 - [ ] Task 3: Create CalculatorViewModel Template (Stub with basic properties)
 - [ ] Task 4: Create CalculatorButton Template (Stub with basic button structure)
